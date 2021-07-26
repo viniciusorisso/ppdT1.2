@@ -1,5 +1,7 @@
+# Tamanho da Hash
 M = 20000000
 
+# Classe pronta da Hash, retirada da internet
 class HashTable:
 
 	# Create empty bucket list of given size
@@ -93,23 +95,31 @@ class HashTable:
 	def __str__(self):
 		return "".join(str(item) for item in self.hash_table)
 
+# Inicialização da Hash
+hash_table = HashTable(M)
+
+# Getter de valor na hash dado uma chave
 def get(key):
     return hash_table.get_value(key)
 
+# Set de valor na hash dado a chave e o valor
 def put(key, value):
     hash_table.set_value(key, value)
     return True
 
-def clear():
-    hash_table = HashTable(M)
-
-hash_table = HashTable(M)
-
 from xmlrpc.server import SimpleXMLRPCServer
+# Inicialização do Servidor na porta 8000
 server = SimpleXMLRPCServer(("localhost", 8000), allow_none=True)
+
+# Console log apenas para fins didáticos
 print("Listening on port 8000...")
-server.register_multicall_functions()
+
+# A linha abaixo não é necessária caso não for utilizar o MultiCall
+# server.register_multicall_functions()
+
+# Declaração das Funções
 server.register_function(get, "get")
 server.register_function(put, "put")
-server.register_function(clear, "clear")
+
+# Deixar o servidor escudando pra sempre
 server.serve_forever()

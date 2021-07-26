@@ -4,11 +4,15 @@ import random
 import threading
 
 # Número que seja divisível por 8,4,2
-m = 80000
+m = 800000
+
+# Declaração do número máximo de threads 
+# Aqui é a quantidade de multis que será lançada 
+# independente da quantidade de threads
+maximum_threads = 8
 
 # Declaração do número de threads
-maximum_threads = 8
-number_of_threads = 8
+number_of_threads = 2
 
 list_values = []
 
@@ -18,6 +22,7 @@ def funcao (init, end):
         multi = xmlrpc.client.MultiCall(proxy)
         for i in range(init, end):
             multi.put(str(i), random.randint(0, m))
+        for i in range(init, end):
             multi.get(str(i))
         list_values.append(tuple(multi()))
 
@@ -32,12 +37,15 @@ for j in range (maximum_threads//number_of_threads):
         t = threading.Thread(target=funcao, args=(init, end))
         list_threads.append(t)
         init = end
-        end += end
+        end += int(m/maximum_threads)
     
     for t in list_threads:
         t.start ()
 
     for t in list_threads:
         t.join ()
+
+# Se quiser verificar quantos elementos foram recebidos do get()
+# print(len(list_values))
 
 print(time.time() - timeSpent)  

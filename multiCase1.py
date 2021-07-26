@@ -16,21 +16,18 @@ list_values = []
 def funcao (init, end):
     # Declaração do Cliente Side RPC    
     with xmlrpc.client.ServerProxy("http://localhost:8000/") as proxy:
+        # Declaração de multiCall
+        multi = xmlrpc.client.MultiCall(proxy)
         for i in range(init, end):
-            proxy.put(str(i), random.randint(0, m))
+            multi.put(str(i), random.randint(0, m))
         for i in range (init, end):
-            list_values.append(proxy.get(str(i)))
+            multi.get(str(i))
+        list_values.append(tuple(multi()))
 
-# Variável de tempo inicializada
 timeSpent = time.time()
-
-# Início e fim de cada thread dado o número m
 init = 0
 end = int(m/number_of_threads)
-
 list_threads = []
-
-# Instanciação e inicialização das threads passando seu início e atualizando seu fim
 for t in range(0, number_of_threads):
     t = threading.Thread(target=funcao, args=(init, end))
     t.start()
@@ -38,11 +35,9 @@ for t in range(0, number_of_threads):
     init = end
     end += int(m/number_of_threads)
 
-# Await das Threads finalizarem
 for t in list_threads:
     t.join()
 
 # Se quiser verificar quantos elementos foram recebidos do get()
 # print(len(list_values))
-
 print(time.time() - timeSpent)
